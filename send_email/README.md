@@ -4,6 +4,8 @@
 pip install smtplib
 pip install xlrd==1.2.0 # 高版本不支持 xlsx 后缀文件
 pip install pyinstaller # 生成可执行文件，根据使用的系统生成不同格式；windows：.exe
+
+pyinstaller -F send_email.py # 生成 dist/send_email.exe 文件后，将 exe 文件移到与 assets 文件夹同一层级
 ```
 
 ## 使用方式
@@ -15,6 +17,8 @@ pip install pyinstaller # 生成可执行文件，根据使用的系统生成不
 - `main.txt` 写入要发送的主题内容
 - `receivers` 写入收件人与对应的文件名
 - `files` 放入对应文件名的文件
+
+执行`send_email.exe`文件
 
 ## 元数据信息
 
