@@ -52,11 +52,11 @@ def main_email(receiver):
 	message['To'] = receiver
 	# message['To'] = receivers[0]
 	# 设置标题
-	with open('assets/title.txt', 'r') as f:
+	with open('assets/title.txt', 'r', encoding='UTF-8') as f:
 		message['Subject'] = f.read()
 
 	# 添加主体内容
-	with open('assets/main.txt', 'r') as f:
+	with open('assets/main.txt', 'r', encoding='UTF-8') as f:
 		content = f.read()
 	main = MIMEText(content, 'plain', 'utf-8')
 
