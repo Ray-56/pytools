@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+      crossorigin="anonymous"
+    />
+    <!-- <link rel="stylesheet" href="../static/bootstrap.min.css"> -->
+    <link rel="stylesheet" href="../static/styles.css">
+    <title>{{ title }}</title>
+  </head>
+  <body>
+    <h4 class="text-center ">{{ title }}</h4>
+    {% set slice_count = (columns|length / col_count) | round(0, 'ceil') %}
+    {% for cur_cols in columns | batch(col_count|int) %}
+    <table class="table table-bordered mb-0">
+      <thead>
+        <tr>
+          <th class="w-[86px] text-center">日期</th>
+          <th class="w-[50px] text-center">星期</th>
+          {% for col in cur_cols | rejectattr('data_index', '==', 'date') | rejectattr('data_index', '==', 'weekday') %}
+          <th colspan="1" class="text-right">{{ col.title }}</th>
+          <th colspan="1" class="text-left w-[102px]">环比</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for record in data_source %}
+        <tr>
+          <td>{{ record.date }}</td>
+          <td>{{ record.weekday }}</td>
+          {% for col in cur_cols | rejectattr('data_index', '==', 'date') | rejectattr('data_index', '==', 'weekday') %}
+            {% set double_col_data = [{'data_index': col.data_index}, {'data_index': col.data_index+'_ratio'}] %}
+            {% for cur_data in double_col_data %}
+              {% set default_text = 'xxx' %}
+              {% set cur_text = record[cur_data.data_index] | default(default_text, true) %}
+              {% set cur_percent = record[cur_data.data_index + '_percent'] | default(0, true) %}
+              <td
+                style="
+                {% if not cur_data.data_index.endswith('_ratio') %}
+                  background-image: -webkit-linear-gradient(
+                      right,
+                      rgba(31, 166, 249, 0.2) {{ cur_percent }},
+                      rgba(0, 0, 0, 0) {{ cur_percent }});
+                {% endif %}
+                "
+                class="
+                text-right
+                {% if cur_data.data_index.endswith('_ratio') %}
+                  {% if cur_text.startswith('-') %}
+                  text-red after:down-arrow
+                  {% elif cur_text != default_text %}
+                  text-green after:up-arrow
+                  {% endif %}
+                {% endif %}
+                {% if cur_text == default_text %}
+                text-gray
+                {% endif %}
+                "
+                data-col="{{ cur_data.data_index }}"
+              >
+                {{ cur_text }}
+              </td>
+            {% endfor %}
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endfor %}
+  </body>
+</html>
